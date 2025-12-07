@@ -29,6 +29,7 @@ namespace MiniPhone.UI
             int size = mod.Config.IconSize;
             int x = Game1.viewport.Width - size - 20 + mod.Config.HudOffsetX;
             int y = 20 + mod.Config.HudOffsetY;
+
             drawRect = new Rectangle(x, y, size, size);
 
             e.SpriteBatch.Draw(icon, drawRect, Color.White * 0.9f);
@@ -36,11 +37,18 @@ namespace MiniPhone.UI
 
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            if (!mod.Config.ShowHudIcon || !InventoryPhone.HasPhoneInInventory()) return;
-            if (e.Button.IsActionButton() && drawRect.Contains(e.Cursor.ScreenPixels))
+            if (!mod.Config.ShowHudIcon || !InventoryPhone.HasPhoneInInventory())
+                return;
+
+            if (e.Button == SButton.Action || e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight)
             {
-                mod.Helper.Input.Suppress(e.Button);
-                mod.Calls.TriggerRandomCall();
+                var cursor = mod.Helper.Input.GetCursorPosition().ScreenPixels;
+
+                if (drawRect.Contains(cursor))
+                {
+                    mod.Helper.Input.Suppress(e.Button);
+                    mod.Calls.TriggerRandomCall();
+                }
             }
         }
     }
