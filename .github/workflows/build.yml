@@ -1,4 +1,4 @@
-name: Build SMAPI Mod
+name: Build SMAPI Mod (Ubuntu)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -16,14 +16,16 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
+      # Build the project
       - name: Restore
         run: dotnet restore MiniPhone/MiniPhone.csproj
 
       - name: Build
-        run: dotnet build MiniPhone/MiniPhone.csproj -c Release
+        run: dotnet build MiniPhone/MiniPhone.csproj --configuration Release
 
-      - name: Upload Artifact
+      # Upload compiled DLL + assets
+      - name: Upload Mod
         uses: actions/upload-artifact@v4
         with:
-          name: MiniPhone-Release
+          name: MiniPhone
           path: MiniPhone/bin/Release/net6.0/
