@@ -33,8 +33,11 @@
      <Reference Include="SMAPI.Toolkit.CoreInterfaces">
       <HintPath>lib/SMAPI.Toolkit.CoreInterfaces.dll</HintPath>
     </Reference>
-<Reference Include="TMXTile">
+    <Reference Include="TMXTile">
       <HintPath>lib/TMXTile.dll</HintPath>
+    </Reference>
+    <Reference Include="xTile">
+      <HintPath>lib/xTile.dll</HintPath>
     </Reference>
 
   </ItemGroup>
