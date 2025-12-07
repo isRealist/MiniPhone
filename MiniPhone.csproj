@@ -4,16 +4,35 @@
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
+    <Reference Include="StardewModdingAPI">
+      <HintPath>lib/StardewModdingAPI.dll</HintPath>
+    </Reference>
+
+    <Reference Include="StardewValley">
+      <HintPath>lib/StardewValley.dll</HintPath>
+    </Reference>
+
+    <Reference Include="HarmonyLib">
+      <HintPath>lib/0Harmony.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Microsoft.Xna.Framework">
+      <HintPath>lib/Microsoft.Xna.Framework.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>lib/Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="assets\**" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="manifest.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="assets\**\*" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>
