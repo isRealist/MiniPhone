@@ -1,5 +1,3 @@
-name: MiniPhone
-
 on:
   push:
   pull_request:
@@ -22,8 +20,8 @@ jobs:
       - name: Build Project
         run: dotnet build MiniPhone.csproj --configuration Release --no-restore
 
-      - name: Upload Mod Build
+      - name: Upload DLL
         uses: actions/upload-artifact@v4
         with:
           name: MiniPhone
-          path: MiniPhone/bin/Release/net8.0/
+          path: MiniPhone/bin/Release/net8.0/**/*.dll
