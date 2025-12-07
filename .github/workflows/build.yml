@@ -26,4 +26,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MiniPhone
-          path: MiniPhone/bin/Release/net6.0/
+          path: MiniPhone/bin/Release/net8.0/
