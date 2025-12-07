@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MiniPhone
-          path: MiniPhone/bin/Release/net8.0/**/*.dll
+          path: bin/Release/net8.0/**/*.dll
