@@ -1,19 +1,33 @@
 using HarmonyLib;
+using StardewValley;
 using StardewValley.Objects;
 
-namespace MiniPhone.Harmony
+namespace MiniPhone.Patches
 {
-    [HarmonyPatch(typeof(Furniture), nameof(Furniture.checkForAction))]
-    internal static class FurniturePatch
+    internal class FurniturePatch
     {
-        public static void Postfix(Furniture __instance, bool justCheckingForActivity, ref bool __result)
+        public static void Apply(Harmony harmony)
         {
-            if (__instance.ParentSheetIndex.Value == 3490)
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Furniture), nameof(Furniture.checkForAction)),
+                prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(CheckForAction_Prefix))
+            );
+        }
+
+        public static bool CheckForAction_Prefix(Furniture __instance, Farmer who, bool justCheckingForActivity, ref bool __result)
+        {
+            if (__instance.ParentSheetIndex == 3490)
             {
-                __result = true;
                 if (!justCheckingForActivity)
-                    MiniPhoneMod.Instance.Calls.TriggerRandomCall();
+                {
+                    Game1.showGlobalMessage("The mini phone buzzes quietly...");
+                }
+
+                __result = true;
+                return false;
             }
+
+            return true;
         }
     }
 }
