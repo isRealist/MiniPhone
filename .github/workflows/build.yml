@@ -19,10 +19,10 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Restore NuGet packages
-        run: dotnet restore MiniPhone/MiniPhone.csproj
+        run: dotnet restore MiniPhone.csproj
 
       - name: Build and create mod zip
-        run: dotnet build MiniPhone/MiniPhone.csproj --configuration Release
+        run: dotnet build MiniPhone.csproj --configuration Release
 
       - name: Find Release Zip File
         id: find_zip
