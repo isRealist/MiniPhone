@@ -33,6 +33,9 @@
      <Reference Include="SMAPI.Toolkit.CoreInterfaces">
       <HintPath>lib/SMAPI.Toolkit.CoreInterfaces.dll</HintPath>
     </Reference>
+<Reference Include="TMXTile">
+      <HintPath>lib/TMXTile.dll</HintPath>
+    </Reference>
 
   </ItemGroup>
 
