@@ -25,7 +25,7 @@ namespace MiniPhone
 
         public override void Entry(IModHelper helper)
         {
-            Monitor = this.Monitor;
+            Monitor = MiniPhoneMod.Monitor;
             PhoneTexture = helper.ModContent.Load<Texture2D>("assets/phone.png");
 
             helper.Events.Display.RenderedHud += OnRenderedHud;
@@ -151,3 +151,4 @@ namespace MiniPhone
         }
     }
 }
+
