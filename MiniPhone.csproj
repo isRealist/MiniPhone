@@ -1,16 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
 
-    <!-- required for SMAPI mods -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-  <!-- reference game + SMAPI DLLs stored in lib/ -->
   <ItemGroup>
     <Reference Include="StardewModdingAPI">
       <HintPath>../lib/StardewModdingAPI.dll</HintPath>
@@ -33,7 +31,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- include assets folder in the build output -->
   <ItemGroup>
     <None Include="assets\**\*" CopyToOutputDirectory="Always" />
   </ItemGroup>
