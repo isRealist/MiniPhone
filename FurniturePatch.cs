@@ -9,12 +9,12 @@ namespace MiniPhone.Patches
         public static void Apply(Harmony harmony)
         {
             harmony.Patch(
-                original: AccessTools.Method(typeof(Furniture), nameof(Furniture.checkForAction)),
+                original: AccessTools.Method(typeof(StardewValley.Objects.Furniture), nameof(StardewValley.Objects.Furniture.checkForAction)),
                 prefix: new HarmonyMethod(typeof(FurniturePatch), nameof(CheckForAction_Prefix))
             );
         }
 
-        public static bool CheckForAction_Prefix(Furniture __instance, Farmer who, bool justCheckingForActivity, ref bool __result)
+        public static bool CheckForAction_Prefix(StardewValley.Objects.Furniture __instance, Farmer who, bool justCheckingForActivity, ref bool __result)
         {
             if (__instance.ParentSheetIndex == 3490)
             {
