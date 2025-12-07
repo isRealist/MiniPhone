@@ -1,141 +1,33 @@
-using System;
-using System.Linq;
-using System.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using HarmonyLib;
+using MiniPhone.Calls;
+using MiniPhone.Config;
+using MiniPhone.Furniture;
+using MiniPhone.UI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
-using StardewValley.Objects;
-using Netcode;
 
 namespace MiniPhone
 {
     public class MiniPhoneMod : Mod
     {
-        public static int PhoneID = 3490;
-        public static Texture2D? PhoneTexture;
-        public static Rectangle PhoneRect = new(1830, 80, 64, 64);
-
-        private Harmony? harmony;
-        private static IMonitor? Monitor;
-        private static DateTime lastRandomCheck = DateTime.MinValue;
+        internal static MiniPhoneMod Instance { get; private set; } = null!;
+        internal ModConfig Config { get; private set; } = null!;
+        internal CallManager Calls { get; private set; } = null!;
+        internal PhoneHudElement Hud { get; private set; } = null!;
 
         public override void Entry(IModHelper helper)
         {
-            MiniPhoneMod.Monitor = base.Monitor;
-            PhoneTexture = helper.ModContent.Load<Texture2D>("assets/phone.png");
-            helper.Events.Display.RenderedHud += OnRenderedHud;
-            helper.Events.Input.ButtonPressed += OnButtonPressed;
-            helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+            Instance = this;
+            Config = ModConfig.Load(helper);
 
-            harmony = new Harmony(this.ModManifest.UniqueID);
-            harmony.Patch(
-                AccessTools.Method(typeof(Furniture), nameof(Furniture.checkForAction)),
-                postfix: new HarmonyMethod(typeof(MiniPhoneMod), nameof(CheckForActionPostfix))
-            );
+            Calls = new CallManager(this);
+            Hud = new PhoneHudElement(this);
+            new InventoryPhone(this);
+            new FurniturePatch();
 
-            MiniPhoneMod.Monitor.Log("Mini Phone mod loaded", LogLevel.Info);
-        }
+            helper.Events.GameLoop.SaveLoaded += (_, __) => MiniPhoneFurniture.Register(helper);
+            helper.Events.Content.AssetRequested += Calls.OnAssetRequested;
 
-        private void OnRenderedHud(object? sender, RenderedHudEventArgs e)
-        {
-            if (PhoneTexture == null || Game1.activeClickableMenu != null)
-                return;
-            Game1.spriteBatch.Draw(PhoneTexture, PhoneRect, Color.White);
-        }
-
-        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
-        {
-            if (PhoneTexture == null)
-                return;
-            if (e.Button.IsActionButton() &&
-                PhoneRect.Contains(Game1.getMouseX(), Game1.getMouseY()))
-            {
-                OpenCustomPhoneMenu();
-            }
-        }
-
-        private static void OpenCustomPhoneMenu()
-        {
-            var npcs = Utility.getAllVillagers();
-            if (npcs.Any())
-            {
-                var npc = npcs[Game1.random.Next(npcs.Count)];
-                string callId = $"mod.{npc.Name.ToLower()}";
-                PlayCustomRing(callId);
-            }
-        }
-
-        public static void CheckForActionPostfix(Furniture __instance, Farmer who, bool justCheckingForActivity, ref bool __result)
-        {
-            if (__instance.ParentSheetIndex == PhoneID)
-            {
-                if (!justCheckingForActivity)
-                    OpenCustomPhoneMenu();
-                __result = true;
-            }
-        }
-
-        private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
-        {
-            if (!Context.IsWorldReady)
-                return;
-            if (e.IsMultipleOf(120))
-            {
-                if ((DateTime.Now - lastRandomCheck).TotalSeconds > 1 &&
-                    Game1.random.NextDouble() < 0.04)
-                {
-                    if (IsPlayerNearModPhone())
-                    {
-                        TriggerRandomModCall();
-                    }
-                    lastRandomCheck = DateTime.Now;
-                }
-            }
-        }
-
-        private static bool IsPlayerNearModPhone()
-        {
-            return Game1.currentLocation.furniture.Any(f =>
-                f.ParentSheetIndex == PhoneID &&
-                Utility.tileWithinRadiusOfPlayer(
-                    (int)f.TileLocation.X,
-                    (int)f.TileLocation.Y,
-                    3,
-                    Game1.player
-                )
-            );
-        }
-
-        private static void TriggerRandomModCall()
-        {
-            string[] modCalls =
-            {
-                "mod.scam1", "mod.pierre", "mod.vincent", "mod.abigail", "mod.sebastian",
-                "mod.haley", "mod.emily", "mod.alex", "mod.sam", "mod.leah",
-                "mod.elliott", "mod.sharlotte", "mod.gus", "mod.robin", "mod.demetrius",
-                "mod.jodi", "mod.kent", "mod.lewis", "mod.marnie", "mod.pam", "mod.penny"
-            };
-            string randomCall = modCalls[Game1.random.Next(modCalls.Length)];
-            PlayCustomRing(randomCall);
-        }
-
-        private static void PlayCustomRing(string callId)
-        {
-            try
-            {
-                Game1.playSound("miniphone_ring");
-                var ringMethod =
-                    typeof(Game1).GetMethod("ringPhone", BindingFlags.NonPublic | BindingFlags.Static) ??
-                    typeof(Phone).GetMethod("Ring", BindingFlags.Public | BindingFlags.Static);
-                ringMethod?.Invoke(null, new object[] { callId });
-            }
-            catch (Exception ex)
-            {
-                MiniPhoneMod.Monitor?.Log($"Ring failed: {ex.Message}", LogLevel.Warn);
-            }
+            Monitor.Log($"MiniPhone v2.1 by justcallmeR loaded! | {Config.RandomCallChance}% every {Config.CheckIntervalSeconds}s", LogLevel.Info);
         }
     }
 }
