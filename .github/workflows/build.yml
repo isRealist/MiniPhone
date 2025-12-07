@@ -16,7 +16,7 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Restore NuGet Packages
+      - name: Restore
         run: dotnet restore MiniPhone.csproj
 
       - name: Build Project
