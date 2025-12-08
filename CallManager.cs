@@ -23,27 +23,25 @@ namespace MiniPhone.Calls
                 return;
             }
 
-            var responses = npcs.Select(n => new Response(n.Name, n.displayName)).ToArray();
-            responses = responses.Concat(new[] { new Response("cancel", "Hang up") }).ToArray();
+            var responses = npcs
+                .Select(n => new Response(n.Name, n.displayName))
+                .ToList();
+
+            responses.Add(new Response("cancel", "Hang up"));
 
             Game1.currentLocation.createQuestionDialogue(
-                question: "Who would you like to call?",
-                answerChoices: responses,
-                dialogKey: "MiniPhone_CallMenu"
-            );
-
-            Game1.afterDialogues = () =>
-            {
-                if (Game1.lastQuestionKey?.Contains("MiniPhone_CallMenu") == true)
+                "Who would you like to call?",
+                responses.ToArray(),
+                (Farmer who, string answer) =>
                 {
-                    string? choice = Game1.player.getResponseForAnswer("MiniPhone_CallMenu");
-                    if (choice != null && choice != "cancel")
-                    {
-                        var npc = npcs.FirstOrDefault(n => n.Name == choice);
-                        if (npc != null) TriggerCall(npc, isManual: true);
-                    }
+                    if (answer == "cancel")
+                        return;
+
+                    var npc = npcs.FirstOrDefault(n => n.Name == answer);
+                    if (npc != null)
+                        TriggerCall(npc, true);
                 }
-            };
+            );
         }
 
         public void TriggerCall(NPC npc, bool isManual)
@@ -52,27 +50,30 @@ namespace MiniPhone.Calls
             string key = prefix + npc.Name;
 
             var custom = mod.Helper.Translation.Get(key);
-            string dialogue = !string.IsNullOrWhiteSpace(custom.ToString()) && !custom.ToString().Contains("{{")
-                ? custom
+            string dialogText =
+                !string.IsNullOrWhiteSpace(custom.ToString()) && !custom.ToString().Contains("{{")
+                ? custom.ToString()
                 : mod.Helper.Translation.Get("call.npc")
                     .ToString()
                     .Replace("{{NPC}}", npc.displayName)
                     .Replace("{{Player}}", Game1.player.Name);
 
             if (!isManual && mod.Config.EnableScamCalls && Game1.random.Next(100) < mod.Config.ScamCallChance)
-                dialogue = mod.Helper.Translation.Get("call.scam").ToString();
+                dialogText = mod.Helper.Translation.Get("call.scam");
 
-            if (mod.Config.PlaySound) Game1.playSound("phone");
+            if (mod.Config.PlaySound)
+                Game1.playSound("phone");
 
-            Game1.objectDialoguePortraitPerson = npc;
-            Game1.drawDialogue(npc, dialogue);
+            var dlg = new Dialogue(npc, dialogText);
+            Game1.DrawDialogue(dlg);
         }
 
         public void TriggerRandomCall()
         {
             var npcs = Utility.getAllCharacters().Where(n => n.isVillager()).ToList();
             if (npcs.Any())
-                TriggerCall(npcs[Game1.random.Next(npcs.Count)], isManual: false);
+                TriggerCall(npcs[Game1.random.Next(npcs.Count)], false);
         }
     }
+}
 }
