@@ -25,7 +25,7 @@ namespace MiniPhone.UI
             if (!mod.Config.ShowHudIcon || Game1.activeClickableMenu != null) return;
 
             if (icon == null)
-                icon = mod.Helper.ModContent.Load<Texture2D>("Assets/Phone16.png");
+                icon = mod.Helper.ModContent.Load<Texture2D>("assets/Phone16.png");
 
             if (icon == null) return;
 
