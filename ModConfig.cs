@@ -78,4 +78,4 @@ namespace MiniPhone.Config
         }
     }
 }
-}
+
