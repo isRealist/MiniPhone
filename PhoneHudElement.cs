@@ -46,7 +46,7 @@ namespace MiniPhone.UI
 
 
 
-            icon ??= mod.Helper.GameContent.Load<Texture2D>("Mods/MiniPhone/Assets/Phone16.png");
+            icon ??= mod.Helper.GameContent.Load<Texture2D>("Mods/MiniPhone/Assets/Phone16");
 
             if (icon == null) return;
 
@@ -107,5 +107,6 @@ namespace MiniPhone.UI
     }
 
 }
+
 
 
